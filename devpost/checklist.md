@@ -58,12 +58,6 @@ Build mode: fast
 - [x] Tested all 5 scenarios end-to-end (genuine fix, failed patch + rollback, test deletion caught, weakened assertion caution, and live Groq/Gemini API execution).
 - [x] Clean-checkout reproducibility validated on clean temporary workspaces without local state dependencies.
 
-## Code Tour and App Map
-- [x] Generated standalone `devpost/app-map.html` detailing:
-  - The 5-stage core journey lifecycle (Baseline -> Model Patch -> Approval Gate -> Final Check -> Verdict Engine).
-  - 3-stop reference code route (`run_check.py`/`parse_junit.py`, `boundary.py`/`edits.py`, `compute_verdict.py`).
-  - Extensibility pointers and reusable engineering takeaways (deterministic verification over model claims).
-
 ## Revisions
 - Separated baseline timeout from simulated final-run timeout in `execute_run()`.
 - Isolated `test_runner_on_demo_workspace` to a fresh temporary workspace for clean checkout.
