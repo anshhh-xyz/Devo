@@ -40,7 +40,11 @@ def cmd_run(args: argparse.Namespace) -> int:
     if args.backend.lower() == "mock":
         adapter = MockModelAdapter(scenario=args.scenario)
     elif args.backend.lower() == "api":
-        adapter = ApiModelAdapter()
+        try:
+            adapter = ApiModelAdapter(model_name=args.model, endpoint=args.endpoint)
+        except ValueError as e:
+            print(f"Configuration error: {e}", file=sys.stderr)
+            return 3
     else:
         print(f"Error: Unsupported backend '{args.backend}'. Use 'mock' or 'api'.", file=sys.stderr)
         return 3
@@ -117,6 +121,8 @@ def main(argv: list[str] | None = None) -> int:
     run_p.add_argument("--preset", default="pytest", help="Check preset to run (default: pytest)")
     run_p.add_argument("--backend", default="mock", choices=["mock", "api"], help="Model backend (default: mock)")
     run_p.add_argument("--scenario", default="scenario_verified", help="Mock scenario fixture name (default: scenario_verified)")
+    run_p.add_argument("--model", default=None, help="Model name override for API backend (e.g., qwen/qwen3.8-27b, gemini-2.0-flash)")
+    run_p.add_argument("--endpoint", default=None, help="Custom API completion endpoint URL")
     run_p.add_argument("--timeout", type=float, default=None, help="Check execution timeout override in seconds")
     run_p.add_argument("--confirmed-min", type=int, default=0, help="Minimum expected passing test count")
 
