@@ -3,6 +3,8 @@
 env/
 venv/
 ENV/
+.claude/
+agent/
 
 # Secrets and credentials
 .env*
