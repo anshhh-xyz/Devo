@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Devo — Architecture & Code Map</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card-bg: #161b22;
+      --border: #30363d;
+      --text: #c9d1d9;
+      --text-muted: #8b949e;
+      --accent: #58a6ff;
+      --success: #3fb950;
+      --warning: #d29922;
+      --danger: #f85149;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 2rem 1rem;
+    }
+    .container { max-width: 900px; margin: 0 auto; }
+    header { border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; margin-bottom: 2rem; }
+    h1 { color: #fff; font-size: 1.8rem; margin-bottom: 0.5rem; }
+    .badge { display: inline-block; background: #238636; color: #fff; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.85rem; font-weight: 600; }
+    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    h2 { font-size: 1.3rem; color: #fff; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1.05rem; color: var(--accent); margin: 1rem 0 0.5rem; }
+    p { margin-bottom: 0.75rem; }
+    code { font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, monospace; background: rgba(110, 118, 129, 0.4); padding: 0.2em 0.4em; border-radius: 4px; font-size: 85%; }
+    pre { background: #000; padding: 1rem; border-radius: 6px; overflow-x: auto; margin: 0.75rem 0; font-family: monospace; border: 1px solid var(--border); }
+    svg { width: 100%; height: auto; display: block; margin: 1.5rem 0; }
+    .route-step { border-left: 3px solid var(--accent); padding-left: 1rem; margin-bottom: 1.25rem; }
+    .route-step strong { color: #fff; }
+    details { margin-top: 0.75rem; background: rgba(255,255,255,0.02); padding: 0.5rem; border-radius: 4px; }
+    summary { cursor: pointer; color: var(--accent); font-weight: 500; }
+    .tag-verified { color: var(--success); font-weight: bold; }
+    .tag-failed { color: var(--danger); font-weight: bold; }
+    .tag-notverified { color: var(--warning); font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Devo — App Map & Verification Architecture</h1>
+      <span class="badge">Evidence-First Coding Assistant</span>
+      <p style="margin-top: 0.5rem; color: var(--text-muted);">
+        A deterministic proof-of-concept developer tool that enforces empirical test execution over AI model claims.
+      </p>
+    </header>
+
+    <div class="card">
+      <h2>The Core Journey (Execution Lifecycle)</h2>
+      <svg viewBox="0 0 850 180" xmlns="http://www.w3.org/2000/svg">
+        <rect x="10" y="60" width="130" height="50" rx="6" fill="#21262d" stroke="#58a6ff" stroke-width="2"/>
+        <text x="75" y="85" fill="#fff" font-size="12" font-family="sans-serif" text-anchor="middle" font-weight="bold">1. Baseline</text>
+        <text x="75" y="100" fill="#8b949e" font-size="10" font-family="sans-serif" text-anchor="middle">Fixed pytest check</text>
+
+        <path d="M 140 85 L 180 85" stroke="#58a6ff" stroke-width="2" marker-end="url(#arrow)"/>
+
+        <rect x="180" y="60" width="130" height="50" rx="6" fill="#21262d" stroke="#d29922" stroke-width="2"/>
+        <text x="245" y="85" fill="#fff" font-size="12" font-family="sans-serif" text-anchor="middle" font-weight="bold">2. Model Patch</text>
+        <text x="245" y="100" fill="#8b949e" font-size="10" font-family="sans-serif" text-anchor="middle">Structured JSON edits</text>
+
+        <path d="M 310 85 L 350 85" stroke="#58a6ff" stroke-width="2" marker-end="url(#arrow)"/>
+
+        <rect x="350" y="60" width="130" height="50" rx="6" fill="#21262d" stroke="#f85149" stroke-width="2"/>
+        <text x="415" y="85" fill="#fff" font-size="12" font-family="sans-serif" text-anchor="middle" font-weight="bold">3. Approval Gate</text>
+        <text x="415" y="100" fill="#8b949e" font-size="10" font-family="sans-serif" text-anchor="middle">Diff & caution checks</text>
+
+        <path d="M 480 85 L 520 85" stroke="#58a6ff" stroke-width="2" marker-end="url(#arrow)"/>
+
+        <rect x="520" y="60" width="130" height="50" rx="6" fill="#21262d" stroke="#58a6ff" stroke-width="2"/>
+        <text x="585" y="85" fill="#fff" font-size="12" font-family="sans-serif" text-anchor="middle" font-weight="bold">4. Final Check</text>
+        <text x="585" y="100" fill="#8b949e" font-size="10" font-family="sans-serif" text-anchor="middle">Sandboxed pytest</text>
+
+        <path d="M 650 85 L 690 85" stroke="#58a6ff" stroke-width="2" marker-end="url(#arrow)"/>
+
+        <rect x="690" y="60" width="140" height="50" rx="6" fill="#21262d" stroke="#3fb950" stroke-width="2"/>
+        <text x="760" y="85" fill="#fff" font-size="12" font-family="sans-serif" text-anchor="middle" font-weight="bold">5. Verdict Engine</text>
+        <text x="760" y="100" fill="#3fb950" font-size="10" font-family="sans-serif" text-anchor="middle">Pure function decision</text>
+
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#58a6ff"/>
+          </marker>
+        </defs>
+      </svg>
+      <p>
+        The central invariant of Devo: <strong>The AI model's prose never influences the verdict.</strong> Only the test harness determines whether code passed, regressed, or was manipulated.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>Reference Code Route (3 Key Stops)</h2>
+
+      <div class="route-step">
+        <strong>Stop 1: The Subprocess Runner & Security Sandbox</strong><br>
+        <code>src/devo/runner/run_check.py</code> & <code>src/devo/runner/parse_junit.py</code>
+        <p>Runs pytest in an isolated subprocess with stripped environment variables (preventing API token leakage), caps output to 500KB to prevent memory exhaustion, and parses XML using <code>defusedxml</code> to prevent XML entity expansion attacks.</p>
+      </div>
+
+      <div class="route-step">
+        <strong>Stop 2: The Workspace Boundary & Diff Protection</strong><br>
+        <code>src/devo/workspace/boundary.py</code> & <code>src/devo/workspace/edits.py</code>
+        <p>Enforces path confinement within the project workspace, flags test file edits with explicit caution banners, and creates byte-for-byte pre-run snapshots enabling zero-risk rollback with <code>devo revert</code>.</p>
+      </div>
+
+      <div class="route-step">
+        <strong>Stop 3: The Pure-Function Verdict Engine</strong><br>
+        <code>src/devo/verdict/compute_verdict.py</code>
+        <p>The mathematical heart of Devo. Pure Python function taking <code>(baseline, final, confirmed_min)</code> and producing:</p>
+        <ul>
+          <li><span class="tag-verified">[VERIFIED]</span>: <code>red_to_green</code> or <code>no_regression_only</code></li>
+          <li><span class="tag-failed">[FAILED]</span>: Test failures recorded or non-zero exit</li>
+          <li><span class="tag-notverified">[NOT_VERIFIED]</span>: Timeouts, crashes, or <strong>test count regressions</strong> (catching deleted tests)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>To Change This, Start Here</h2>
+      <ul>
+        <li><strong>Add a new check preset (e.g. npm test or cargo test):</strong> Edit <code>src/devo/runner/presets.py</code> to add preset command definitions and timeout boundaries.</li>
+        <li><strong>Support another LLM provider:</strong> Edit <code>src/devo/model/api.py</code> inside <code>detect_api_credentials()</code> to register endpoint and model credentials.</li>
+        <li><strong>Customize terminal reporting:</strong> Edit <code>src/devo/report/render.py</code> to format banners, diff views, and verdict reports.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>A Practice to Reuse</h2>
+      <p>
+        <strong>Deterministic Verification over Agent Prose:</strong> In any agentic development pipeline, never parse phrases like <em>"I have fixed the issue"</em> as evidence of completion. Build a separate, read-only harness that runs your mechanical tests and compares execution metrics (test counts, duration, exit codes) directly.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>How to Run Devo</h2>
+      <pre><code># Health check
+pytest tests/
+
+# Replay deterministic mock scenario
+python -m devo run --workspace demo/workspace --task "Fix divide" --backend mock --scenario scenario_verified
+
+# Live LLM run (auto-detects Groq or Gemini)
+python -m devo run --workspace demo/workspace_api --task "Fix title_case" --backend api
+
+# Instant rollback
+python -m devo revert --run &lt;RUN_ID&gt; --workspace demo/workspace</code></pre>
+    </div>
+  </div>
+</body>
+</html>

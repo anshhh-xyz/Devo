@@ -52,3 +52,21 @@ Build mode: fast
 - [x] **6. Final clean-checkout verification and docs**
   Becomes usable: Fresh clone test, complete README, open source license check.
   Commit: `Docs, license and clean-checkout fixes`
+
+## Final Review
+- [x] All 6 slices verified mechanically against `spec.md` with 52 automated tests passing.
+- [x] Tested all 5 scenarios end-to-end (genuine fix, failed patch + rollback, test deletion caught, weakened assertion caution, and live Groq/Gemini API execution).
+- [x] Clean-checkout reproducibility validated on clean temporary workspaces without local state dependencies.
+
+## Code Tour and App Map
+- [x] Generated standalone `devpost/app-map.html` detailing:
+  - The 5-stage core journey lifecycle (Baseline -> Model Patch -> Approval Gate -> Final Check -> Verdict Engine).
+  - 3-stop reference code route (`run_check.py`/`parse_junit.py`, `boundary.py`/`edits.py`, `compute_verdict.py`).
+  - Extensibility pointers and reusable engineering takeaways (deterministic verification over model claims).
+
+## Revisions
+- Separated baseline timeout from simulated final-run timeout in `execute_run()`.
+- Isolated `test_runner_on_demo_workspace` to a fresh temporary workspace for clean checkout.
+- Added scenario 4 (`scenario_test_deleted.json`) and scenario 5 (`scenario_weakened_test.json`) demonstrating Devo's defense-in-depth against test manipulation.
+- Added multi-provider auto-detection in `src/devo/model/api.py` supporting Groq and Gemini with sub-second live runs.
+
