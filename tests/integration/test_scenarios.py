@@ -1,4 +1,4 @@
-"""Integration tests executing the full verification lifecycle across all three scenarios."""
+"""Integration tests executing the full verification lifecycle across all demo scenarios."""
 import tempfile
 from pathlib import Path
 from devo.controller.run import RunState, execute_run
@@ -89,3 +89,36 @@ def test_scenario_rejection_leaves_files_untouched():
         assert report.state == RunState.REJECTED
         assert report.verdict.state == "NOT_VERIFIED"
         assert (ws / "mathutils.py").read_text() == original_content
+
+
+def test_scenario_test_deleted_caught():
+    """Model deletes failing test instead of fixing the bug — Devo must return NOT_VERIFIED.
+
+    This is Devo's core value proposition: the test suite goes green (exit code 0,
+    zero failures), but fewer tests ran than in the baseline, so Devo refuses to
+    call it verified.  The bug in divide() still exists untouched.
+    """
+    with tempfile.TemporaryDirectory() as td:
+        ws = Path(td)
+        reset_demo("demo/seed", ws)
+
+        # Capture pristine state: the bug in divide() is still in the source
+        original_divide_source = (ws / "mathutils.py").read_text()
+
+        adapter = MockModelAdapter("scenario_test_deleted", fixtures_dir="fixtures/model")
+        report = execute_run(
+            workspace=ws,
+            task="Fix division in mathutils.py (model cheats by deleting test)",
+            model_adapter=adapter,
+            approval_callback=lambda diff: True,
+        )
+
+        assert report.state == RunState.DONE
+        # Suite is green — but Devo still refuses to verify
+        assert report.verdict.state == "NOT_VERIFIED"
+        # Specifically because fewer tests ran than the baseline established
+        assert "regressed" in (report.verdict.reasons[0] if report.verdict.reasons else "")
+        assert report.final.executed < report.baseline.executed
+        # The underlying bug was never fixed
+        assert "return a * b" in (ws / "mathutils.py").read_text()
+
