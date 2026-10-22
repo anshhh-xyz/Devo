@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="5" time="0.104" timestamp="2026-10-22T17:10:36.817842+05:30" hostname="Apex"><testcase classname="demo.workspace.test_mathutils" name="test_add" time="0.002" /><testcase classname="demo.workspace.test_mathutils" name="test_subtract" time="0.001" /><testcase classname="demo.workspace.test_mathutils" name="test_multiply" time="0.001" /><testcase classname="demo.workspace.test_mathutils" name="test_clamp" time="0.001" /><testcase classname="demo.workspace.test_mathutils" name="test_divide" time="0.001"><failure message="assert 12 == 3&#10; +  where 12 = divide(6, 2)">def test_divide():
+&gt;       assert divide(6, 2) == 3
+E       assert 12 == 3
+E        +  where 12 = divide(6, 2)
+
+demo\workspace\test_mathutils.py:23: AssertionError</failure></testcase></testsuite></testsuites>
