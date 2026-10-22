@@ -122,3 +122,36 @@ def test_scenario_test_deleted_caught():
         # The underlying bug was never fixed
         assert "return a * b" in (ws / "mathutils.py").read_text()
 
+
+def test_scenario_weakened_test_flagged_and_rejected():
+    """Model alters assertions in test_mathutils.py to match buggy behavior.
+
+    Devo's defense in depth:
+    1. diff.touches_tests is explicitly True, prompting the human approval gate.
+    2. If rejected by the user, workspace remains pristine.
+    """
+    with tempfile.TemporaryDirectory() as td:
+        ws = Path(td)
+        reset_demo("demo/seed", ws)
+        original_test_content = (ws / "test_mathutils.py").read_text()
+
+        adapter = MockModelAdapter("scenario_weakened_test", fixtures_dir="fixtures/model")
+
+        observed_touches_tests = []
+
+        def inspect_diff_and_reject(diff):
+            observed_touches_tests.append(diff.touches_tests)
+            return False  # User spots the weakened assertion and rejects!
+
+        report = execute_run(
+            workspace=ws,
+            task="Fix division by altering test assertion",
+            model_adapter=adapter,
+            approval_callback=inspect_diff_and_reject,
+        )
+
+        assert observed_touches_tests == [True]
+        assert report.state == RunState.REJECTED
+        assert (ws / "test_mathutils.py").read_text() == original_test_content
+
+
