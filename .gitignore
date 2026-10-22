@@ -1,0 +1,26 @@
+# Environments and virtualenvs
+.venv/
+env/
+venv/
+ENV/
+
+# Secrets and credentials
+.env*
+!.env.example
+
+# Python runtime artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+
+# Devo run artifacts and backups
+.devo-runs/
+demo/workspace/
+
+# Private Devpost learner profile (stays local, never committed)
+devpost/learner-profile.md
+/devpost/learner-profile.md
