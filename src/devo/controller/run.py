@@ -36,6 +36,8 @@ def execute_run(
     preset_name: str = "pytest",
     approval_callback: Callable[[DiffResult], bool] | None = None,
     timeout_override: float | None = None,
+    baseline_timeout: float | None = None,
+    final_timeout: float | None = None,
     confirmed_min: int = 0,
     run_id: str | None = None,
     runs_dir: str = ".devo-runs",
@@ -77,7 +79,10 @@ def execute_run(
     # 3. BASELINE_RUNNING
     current_state = RunState.BASELINE_RUNNING
     emitter.emit(current_state.value, "start", f"Running baseline check ({preset_name})")
-    baseline_result = run_check(ws, preset=preset, timeout_override=timeout_override)
+    actual_baseline_timeout = baseline_timeout
+    actual_final_timeout = final_timeout if final_timeout is not None else timeout_override
+
+    baseline_result = run_check(ws, preset=preset, timeout_override=actual_baseline_timeout)
     emitter.emit(
         current_state.value,
         "completed",
@@ -171,7 +176,7 @@ def execute_run(
     # 8. FINAL_RUNNING
     current_state = RunState.FINAL_RUNNING
     emitter.emit(current_state.value, "start", f"Running final check ({preset_name})")
-    final_result = run_check(ws, preset=preset, timeout_override=timeout_override)
+    final_result = run_check(ws, preset=preset, timeout_override=actual_final_timeout)
     emitter.emit(
         current_state.value,
         "completed",

@@ -63,11 +63,12 @@ def test_scenario_not_verified_timeout_end_to_end():
             task="Introduce infinite loop",
             model_adapter=adapter,
             approval_callback=lambda diff: True,
-            timeout_override=0.5,
+            final_timeout=0.5,
         )
 
         assert report.state == RunState.DONE
         assert report.verdict.state == "NOT_VERIFIED"
+        assert report.baseline.status == "completed"
         assert report.final.status == "timeout"
 
 

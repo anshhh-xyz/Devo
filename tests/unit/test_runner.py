@@ -30,14 +30,17 @@ def test_missing_workspace():
 
 
 def test_runner_on_demo_workspace():
-    # demo/workspace has the seeded planted bug
-    res = run_check("demo/workspace")
-    assert res.status == "completed"
-    assert res.exit_code == 1
-    assert res.junit_ok is True
-    assert res.tests == 5
-    assert res.failures == 1
-    assert res.errors == 0
+    with tempfile.TemporaryDirectory() as td:
+        ws = Path(td)
+        from devo.workspace.reset import reset_demo
+        reset_demo("demo/seed", ws)
+        res = run_check(ws)
+        assert res.status == "completed"
+        assert res.exit_code == 1
+        assert res.junit_ok is True
+        assert res.tests == 5
+        assert res.failures == 1
+        assert res.errors == 0
 
 
 def test_runner_timeout_kill():
