@@ -1,0 +1,14 @@
+{
+  "plan": {
+    "summary": "Fix divide function to perform division instead of multiplication",
+    "files": ["mathutils.py"],
+    "approach": "Replace multiplication operation with standard float division and zero-check"
+  },
+  "edits": [
+    {
+      "path": "mathutils.py",
+      "old_str": "def divide(a: float, b: float) -> float:\n    # PLANTED BUG: returns multiplication instead of division\n    return a * b",
+      "new_str": "def divide(a: float, b: float) -> float:\n    if b == 0:\n        raise ZeroDivisionError(\"division by zero\")\n    return a / b"
+    }
+  ]
+}

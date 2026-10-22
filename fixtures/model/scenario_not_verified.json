@@ -1,0 +1,14 @@
+{
+  "plan": {
+    "summary": "Introduce infinite loop causing test execution to hang and timeout",
+    "files": ["mathutils.py"],
+    "approach": "Insert while True loop inside divide function"
+  },
+  "edits": [
+    {
+      "path": "mathutils.py",
+      "old_str": "def divide(a: float, b: float) -> float:\n    # PLANTED BUG: returns multiplication instead of division\n    return a * b",
+      "new_str": "def divide(a: float, b: float) -> float:\n    import time\n    while True:\n        time.sleep(0.05)\n    return a / b"
+    }
+  ]
+}

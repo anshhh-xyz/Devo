@@ -1,0 +1,19 @@
+"""State names and transition definitions for the Devo run controller."""
+from enum import Enum
+
+
+class RunState(str, Enum):
+    IDLE = "IDLE"
+    WORKSPACE_SELECTED = "WORKSPACE_SELECTED"
+    INSPECTING = "INSPECTING"
+    BASELINE_RUNNING = "BASELINE_RUNNING"
+    PLANNING = "PLANNING"
+    DIFF_READY = "DIFF_READY"
+    AWAITING_APPROVAL = "AWAITING_APPROVAL"
+    REJECTED = "REJECTED"
+    APPROVED = "APPROVED"
+    APPLYING = "APPLYING"
+    FINAL_RUNNING = "FINAL_RUNNING"
+    DONE = "DONE"
+    REVERTED = "REVERTED"
+    ERROR = "ERROR"
