@@ -42,6 +42,7 @@ def prepare_and_validate_edits(
     # Group edits by resolved relative path
     file_changes: dict[str, tuple[str, str]] = {}
     current_contents: dict[str, str] = {}
+    original_contents: dict[str, str] = {}
     line_ending_is_crlf: dict[str, bool] = {}
 
     for idx, edit in enumerate(edits):
@@ -59,30 +60,32 @@ def prepare_and_validate_edits(
         rel_key = str(target_file.relative_to(ws)).replace("\\", "/")
 
         if rel_key not in current_contents:
-            raw_text = target_file.read_text(encoding="utf-8", errors="replace")
+            try:
+                raw_text = target_file.read_bytes().decode("utf-8")
+            except UnicodeDecodeError:
+                raise EditValidationError(f"'{rel_key}' is not valid UTF-8; refusing to edit it")
             current_contents[rel_key] = raw_text
+            original_contents[rel_key] = raw_text
             line_ending_is_crlf[rel_key] = "\r\n" in raw_text
 
         text = current_contents[rel_key]
-        normalized_text = normalize_line_endings(text)
-        normalized_old = normalize_line_endings(old_str)
-        normalized_new = normalize_line_endings(new_str)
+        # Match against the file's own line endings so every other byte is preserved.
+        old_lf = normalize_line_endings(old_str)
+        new_lf = normalize_line_endings(new_str)
+        if line_ending_is_crlf[rel_key]:
+            old_match = old_lf.replace("\n", "\r\n")
+            new_text_piece = new_lf.replace("\n", "\r\n")
+        else:
+            old_match, new_text_piece = old_lf, new_lf
 
-        count = normalized_text.count(normalized_old)
+        count = text.count(old_match)
         if count == 0:
             raise EditValidationError(f"Search block ('old_str') not found in '{rel_key}'")
         if count > 1:
             raise EditValidationError(f"Ambiguous edit: 'old_str' matches {count} times in '{rel_key}'. Must match exactly once.")
 
-        updated_text = normalized_text.replace(normalized_old, normalized_new, 1)
-
-        # Restore original CRLF if detected
-        if line_ending_is_crlf[rel_key]:
-            updated_text = updated_text.replace("\n", "\r\n")
-
-        current_contents[rel_key] = updated_text
-        original_text = target_file.read_text(encoding="utf-8", errors="replace")
-        file_changes[rel_key] = (original_text, updated_text)
+        current_contents[rel_key] = text.replace(old_match, new_text_piece, 1)
+        file_changes[rel_key] = (original_contents[rel_key], current_contents[rel_key])
 
     diff_result = generate_diff(file_changes)
     return file_changes, diff_result
@@ -108,6 +111,6 @@ def apply_validated_edits(
     # Write modifications
     for rel_path, (_, new_text) in file_changes.items():
         file_path = resolve_safe_path(rel_path, ws)
-        file_path.write_text(new_text, encoding="utf-8")
+        file_path.write_bytes(new_text.encode("utf-8"))
 
     return diff_result

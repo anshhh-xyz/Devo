@@ -1,7 +1,7 @@
 """Workspace inspection utility with strict filtering and trace logging."""
 from pathlib import Path
 from devo.trace.trace import TraceEmitter
-from devo.workspace.boundary import resolve_safe_path
+from devo.workspace.boundary import BoundaryViolationError, resolve_safe_path
 
 IGNORED_DIR_NAMES = {
     ".git",
@@ -41,6 +41,14 @@ def inspect_workspace(workspace: Path | str, emitter: TraceEmitter | None = None
 
         filename = path.name
         if filename.startswith(".env"):
+            continue
+
+        # Never read through a symlink that resolves outside the workspace
+        try:
+            resolve_safe_path(path, ws)
+        except BoundaryViolationError:
+            if emitter:
+                emitter.emit("INSPECTING", "skipped", f"{'/'.join(rel_parts)} (resolves outside workspace)")
             continue
 
         # Check file size
