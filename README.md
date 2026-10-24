@@ -129,6 +129,48 @@ See [`.env.example`](.env.example) for reference.
 
 ---
 
+## Using Devo on Your Own Project
+
+You can run Devo on any local Python codebase that uses `pytest`.
+
+### 1. Prerequisites for your project
+* Your project should have automated tests runnable via `pytest` (e.g., in `tests/` or `test_*.py`).
+* Set your API key in your terminal session (see [API Key Setup](#api-key-setup) above).
+
+### 2. Run Devo on your codebase
+Point `--workspace` to your project's root folder and describe the bug or fix in `--task`:
+
+```bash
+python -m devo run \
+  --workspace /path/to/your/project \
+  --task "Fix ZeroDivisionError in calculate_metrics when dataset is empty" \
+  --backend api
+```
+
+*(On Windows, you can provide absolute paths like `C:\Users\you\repos\my-project` or relative paths like `../my-project`)*.
+
+### 3. Step-by-Step Interactive Flow
+
+1. **Baseline check**: Devo executes your existing test suite in a sandboxed subprocess and records passing/failing test counts *before* touching any code.
+2. **Model patch generation**: Devo provides the model with the workspace context and test failure output. The model returns structured edits (exact search-and-replace blocks).
+3. **Diff inspection & approval gate**: Devo calculates a unified diff and presents it in your terminal.
+   * **To apply the patch**: Type `approve` and press Enter.
+   * **To reject**: Press Enter without typing anything (or type `no`). Devo terminates immediately and makes **zero changes** to your workspace.
+4. **Verification re-run**: If approved, Devo creates a byte-for-byte backup, applies the edits safely within the workspace boundary, and re-runs the exact same test suite under identical constraints.
+5. **Verdict computation**: The pure-function verdict engine compares pre-run vs post-run test execution metrics and reports:
+   * **`[VERIFIED]`**: All tests pass, and no test count regression occurred.
+   * **`[FAILED]`**: Tests still failed or crashed after the edit.
+   * **`[NOT VERIFIED]`**: Tests passed, but total test count decreased (caught test deletion) or tests timed out.
+
+### 4. Undoing / Rolling Back Changes
+If you want to undo what Devo modified, every run prints a unique **Run ID** (e.g., `run_20261025_015033_abc123`). Restore your workspace to its exact pre-run state with:
+
+```bash
+python -m devo revert --workspace /path/to/your/project --run <RUN_ID>
+```
+
+---
+
 ## CLI Reference
 
 ### `devo run` — Run the verification loop
